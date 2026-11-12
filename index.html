@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KARIR MERDEN – Info Loker Pemuda Desa Merden</title>
+  <meta name="description" content="Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.">
+  <meta name="theme-color" content="#14532d">
+  <meta property="og:title" content="KARIR MERDEN – Info Loker Pemuda Desa Merden">
+  <meta property="og:description" content="Lowongan kerja Banjarnegara, Purbalingga, Banyumas, dan sekitarnya. Dicek admin desa, gratis.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1 id="nama">KARIR MERDEN</h1>
+      <p>Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.</p>
+      <div class="nav">
+        <button type="button" id="navLoker" class="on">Loker</button>
+        <button type="button" id="navTips">Tips aman melamar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- DAFTAR -->
+    <section id="vList">
+      <div class="filters" role="search">
+        <input type="search" id="q" placeholder="Cari jabatan atau perusahaan" aria-label="Cari jabatan atau perusahaan">
+        <div class="frow">
+          <select id="fKab" aria-label="Kabupaten"><option value="">Semua daerah</option></select>
+          <select id="fEdu" aria-label="Lulusan saya"><option value="">Semua lulusan</option></select>
+        </div>
+        <label class="check"><input type="checkbox" id="fTanpa"> Hanya yang tanpa pengalaman</label>
+      </div>
+      <div id="count" class="count"></div>
+      <div id="list"><div class="loading">Memuat lowongan…</div></div>
+    </section>
+
+    <!-- DETAIL -->
+    <section id="vDetail" class="hidden">
+      <button type="button" class="back" id="backBtn">‹ Kembali ke daftar loker</button>
+      <div id="detail"></div>
+    </section>
+
+    <!-- TIPS -->
+    <section id="vTips" class="hidden">
+      <div class="tips">
+        <h2>Tips aman melamar kerja</h2>
+        <p>Lowongan asli <b>tidak pernah</b> meminta uang dari pelamar. Waspadai 5 ciri lowongan palsu ini:</p>
+        <ol>
+          <li>Meminta biaya pendaftaran, pelatihan, seragam, medical check-up, atau tiket perjalanan.</li>
+          <li>Gaji sangat besar untuk syarat yang sangat mudah.</li>
+          <li>Hanya ada nomor WA, tanpa nama perusahaan dan alamat yang jelas.</li>
+          <li>Langsung "diterima" tanpa wawancara, lalu didesak cepat transfer.</li>
+          <li>Diminta mengirim foto KTP, KK, atau data rekening sebelum ada wawancara resmi.</li>
+        </ol>
+        <p>Untuk kerja ke luar negeri, pastikan melalui perusahaan penempatan resmi (P3MI) dan cek ke Dinas Tenaga Kerja.</p>
+        <p><b>Ragu dengan sebuah lowongan?</b> Tekan tombol "Laporkan lowongan ini" di halaman detail, atau tanyakan ke kantor desa.</p>
+        <p><b>Dinas Tenaga Kerja Kabupaten Banjarnegara</b><br>
+          Jl. Letjend Suprapto No. 234A Semampir, Banjarnegara<br>
+          Telp. (0286) 591012<br>
+          Layanan Kartu Kuning (AK-1) tersedia lewat SIAPKerja.</p>
+      </div>
+    </section>
+
+    <footer>Pemerintah Desa Merden, Kec. Purwanegara, Kab. Banjarnegara</footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
