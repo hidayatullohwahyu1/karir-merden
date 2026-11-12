@@ -40,7 +40,7 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 .topbar { position: sticky; top: 0; z-index: 20; background: var(--card); box-shadow: var(--shadow); }
 .topbar-in { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 56px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); min-width: 0; flex: 1; }
-.logo { width: 40px; height: 40px; border-radius: 12px; background: var(--brand); color: #fff; display: grid; place-items: center;
+.logo { width: 40px; height: 40px; border-radius: 11px; display: block;
   font-weight: 800; letter-spacing: .5px; flex: none; }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
 .brand-text b { font-size: 18px; letter-spacing: .3px; color: var(--brand2); white-space: nowrap; }
@@ -155,3 +155,53 @@ footer { text-align: center; color: var(--text2); font-size: 12px; padding: 16px
 
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 60; background: #323232; color: #fff;
   padding: 10px 16px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); max-width: calc(100% - 32px); }
+
+/* ---------- Tambahan: PWA, Stories, navigasi bawah, simpan ---------- */
+.pill-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 999px; border: 0;
+  background: var(--brand); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; }
+.pill-btn svg { width: 18px; height: 18px; }
+
+.stories { display: flex; gap: 12px; overflow-x: auto; padding: 4px 12px 12px; scrollbar-width: none; scroll-snap-type: x proximity; }
+.stories::-webkit-scrollbar { display: none; }
+.story { flex: none; width: 74px; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  scroll-snap-align: start; color: var(--text); }
+.story .ring-o { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: var(--line2); display: block; }
+.story.fresh .ring-o { background: conic-gradient(from 210deg, #f59e0b, #ef4444, #d946ef, #22c55e, #f59e0b); }
+.story .ring-o > * { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg); display: grid; place-items: center; object-fit: cover;
+  background: var(--card); color: #fff; font-weight: 700; font-size: 18px; }
+.story small { font-size: 12px; line-height: 1.2; max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.install-card { display: flex; align-items: center; gap: 12px; background: var(--card); box-shadow: var(--shadow); padding: 12px; margin: 0 0 12px; }
+.install-card img { border-radius: 12px; flex: none; }
+.install-card div { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 13px; color: var(--text2); }
+.install-card b { color: var(--text); font-size: 15px; }
+.install-card .notice-x { color: var(--text2); }
+.btn-sm { height: 34px; padding: 0 14px; border-radius: 8px; border: 0; background: var(--brand); color: #fff; font-weight: 700; cursor: pointer; flex: none; }
+@media (min-width: 700px) { .install-card { border-radius: var(--radius); } }
+
+.post-b[data-open] { cursor: pointer; }
+.post-b[data-open]:focus-visible { outline: 2px solid var(--brand2); outline-offset: -2px; }
+.act.saved, .btn.saved { color: var(--brand2); }
+.act.saved svg, .btn.saved svg { fill: currentColor; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+h1.count { font-weight: 600; }
+
+.bottom-nav { display: none; }
+@media (max-width: 699px) {
+  .top-actions .desk { display: none; }
+  body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+  .bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); }
+  .bottom-nav button { position: relative; height: 58px; border: 0; background: none; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 2px; color: var(--text2); font-size: 11px; font-weight: 600; cursor: pointer; }
+  .bottom-nav button.on { color: var(--brand2); }
+  .bottom-nav button.on svg { stroke-width: 2.4; }
+  .bottom-nav button.on::before { content: ""; position: absolute; top: 0; left: 25%; right: 25%; height: 3px; border-radius: 0 0 3px 3px; background: var(--brand2); }
+  .bottom-nav .badge { position: absolute; top: 6px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: var(--danger); color: #fff; font-size: 11px; font-style: normal; display: grid; place-items: center; }
+  .toast { bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+
+.sheet { position: fixed; inset: 0; z-index: 55; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet-in { width: 100%; max-width: 480px; background: var(--card); border-radius: 16px 16px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom)); }
+.sheet-in ol { padding-left: 20px; line-height: 1.7; }

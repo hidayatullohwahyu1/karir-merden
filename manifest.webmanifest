@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "KARIR MERDEN – Info Loker Desa Merden",
+  "short_name": "Karir Merden",
+  "description": "Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.",
+  "lang": "id",
+  "start_url": "./?utm_source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f2f5",
+  "theme_color": "#14532d",
+  "categories": ["business", "government"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Tips aman melamar", "url": "./?v=tips", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Admin: unggah flyer", "url": "./admin.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -5,7 +5,7 @@
   'use strict';
 
   var API = (window.KM_CONFIG && window.KM_CONFIG.API_URL) || '';
-  var CACHE_KEY = 'km_jobs_v2', NOTICE_KEY = 'km_notice_off';
+  var CACHE_KEY = 'km_jobs_v2', NOTICE_KEY = 'km_notice_off', SAVED_KEY = 'km_saved';
   var PAGE = 8;
   var S = { jobs: [], loaded: false, error: '', currentId: '', kab: '', shown: PAGE, view: 'list' };
   var INFO = {
@@ -27,8 +27,25 @@
     send: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>',
     share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5l7 7-7 7"/><path d="M21 12H10a7 7 0 00-7 7"/></svg>',
     info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.5"/></svg>',
-    flag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>'
+    flag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>',
+    save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>'
   };
+
+  /* ---------- Lowongan tersimpan (di perangkat ini saja) ---------- */
+  var saved = (function () { try { var a = JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } })();
+  function isSaved(id) { return saved.indexOf(id) >= 0; }
+  function toggleSave(id) {
+    var i = saved.indexOf(id);
+    if (i >= 0) saved.splice(i, 1); else saved.unshift(id);
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify(saved.slice(0, 100))); } catch (e) { /* abaikan */ }
+    updateSavedBadge();
+    return i < 0;
+  }
+  function updateSavedBadge() {
+    var n = saved.filter(function (id) { var j = findJob(id); return j && !expired(j); }).length;
+    var b = document.getElementById('savedBadge');
+    if (b) { b.textContent = n > 9 ? '9+' : String(n); b.classList.toggle('hidden', !n); }
+  }
 
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -139,23 +156,29 @@
     S.kab = c.getAttribute('data-kab');
     Array.prototype.forEach.call($('chips').children, function (x) { x.classList.toggle('on', x === c); });
     S.shown = PAGE;
-    if (S.view !== 'list') openList(true); else renderList();
+    if (S.view !== 'list' && S.view !== 'saved') openList(true); else renderList();
     window.scrollTo(0, 0);
   });
   $('q').addEventListener('input', function () { S.shown = PAGE; renderList(); });
   ['fEdu', 'fTanpa'].forEach(function (id) { $(id).addEventListener('change', function () { S.shown = PAGE; renderList(); }); });
-  $('searchBtn').addEventListener('click', function () {
-    var open = $('filterPanel').classList.toggle('hidden') === false;
-    this.setAttribute('aria-expanded', String(open));
-    if (open) { if (S.view !== 'list') openList(true); $('q').focus(); }
-  });
+  function toggleSearch(forceOpen) {
+    var panel = $('filterPanel');
+    var open = forceOpen === true ? true : panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    $('searchBtn').setAttribute('aria-expanded', String(open));
+    if (open) { if (S.view !== 'list') openList(true); window.scrollTo(0, 0); $('q').focus(); }
+    markNav();
+  }
+  $('searchBtn').addEventListener('click', function () { toggleSearch(); });
 
   function expired(j) { return j.batas && j.batas < todayIso(); }
   function filtered() {
     var q = $('q').value.trim().toLowerCase();
     var edu = $('fEdu').value, tanpa = $('fTanpa').checked, EDU = INFO.pendidikan;
+    var onlySaved = S.view === 'saved';
     return S.jobs.filter(function (j) {
       if (expired(j)) return false;
+      if (onlySaved && !isSaved(j.id)) return false;
       if (q && (j.judul + ' ' + j.perusahaan + ' ' + j.kategori + ' ' + j.alamat + ' ' + j.kabupaten).toLowerCase().indexOf(q) < 0) return false;
       if (S.kab && j.kabupaten !== S.kab) return false;
       if (edu && Math.max(0, EDU.indexOf(j.pendidikan)) > EDU.indexOf(edu)) return false;
@@ -199,15 +222,38 @@
       '<div class="post-h"><span class="ava" style="background:' + colorFor(j.perusahaan) + '" aria-hidden="true">' + esc(initials(j.perusahaan)) + '</span>' +
         '<div class="who"><div class="co"><span>' + esc(j.perusahaan || 'Perusahaan') + '</span>' + (j.label ? I.check : '') + '</div>' +
         '<div class="sub">' + esc(j.kabupaten) + (j.dicek ? ' · ' + esc(waktuLalu(j.dicek)) : '') + (j.label ? ' · Dicek admin' : '') + '</div></div></div>' +
-      '<div class="post-b"><h2>' + esc(j.judul) + '</h2>' + facts(j) + ring + '</div>' +
+      '<div class="post-b"' + (full ? '' : ' data-open="' + esc(j.id) + '" role="link" tabindex="0" aria-label="Buka detail ' + esc(j.judul) + '"') + '>' +
+        '<h2>' + esc(j.judul) + '</h2>' + facts(j) + ring + '</div>' +
       mediaHtml(j) +
       '<div class="stats">' + viewsHtml(j) + (j.alamat ? '<span>' + I.pin + esc(j.alamat.length > 40 ? j.alamat.slice(0, 38) + '…' : j.alamat) + '</span>' : '') + '</div>' +
       (full ? '' : '<div class="actions">' +
         (lamar ? '<a class="act primary" data-lamar="' + esc(j.id) + '" href="' + esc(lamar.href) + '" target="_blank" rel="noopener">' + I.send + 'Lamar</a>'
                : '<button type="button" class="act primary" data-open="' + esc(j.id) + '">' + I.send + 'Lamar</button>') +
         '<button type="button" class="act" data-share="' + esc(j.id) + '">' + I.share + 'Bagikan</button>' +
-        '<button type="button" class="act" data-open="' + esc(j.id) + '">' + I.info + 'Detail</button>' +
+        saveBtn(j, 'act') +
       '</div>') + '</article>';
+  }
+  function saveBtn(j, cls) {
+    var on = isSaved(j.id);
+    return '<button type="button" class="' + cls + (on ? ' saved' : '') + '" data-save="' + esc(j.id) + '" aria-pressed="' + on + '">' +
+      I.save + '<span>' + (on ? 'Tersimpan' : 'Simpan') + '</span></button>';
+  }
+
+  /* ---------- Baris "Terbaru" ala Stories ---------- */
+  function renderStories() {
+    var box = $('stories');
+    var items = S.view === 'list' && !S.kab && !$('q').value.trim()
+      ? S.jobs.filter(function (j) { return !expired(j); }).slice(0, 12) : [];
+    if (items.length < 3) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    box.innerHTML = items.map(function (j) {
+      var fresh = j.dicek && daysFromToday(j.dicek) >= -3;
+      var inner = j.foto
+        ? '<img src="' + esc(j.foto) + '" data-fid="' + esc(j.fotoId || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+        : '<span style="background:' + colorFor(j.perusahaan) + '">' + esc(initials(j.perusahaan)) + '</span>';
+      return '<button type="button" class="story' + (fresh ? ' fresh' : '') + '" data-open="' + esc(j.id) + '" aria-label="' + esc(j.judul + ' – ' + j.perusahaan) + '">' +
+        '<span class="ring-o">' + inner + '</span><small>' + esc(j.judul) + '</small></button>';
+    }).join('');
   }
 
   function skeletons(n) {
@@ -229,9 +275,16 @@
       return;
     }
     var items = filtered();
-    $('count').textContent = items.length ? items.length + ' lowongan' + (S.kab ? ' di ' + S.kab : '') : '';
+    var isSavedView = S.view === 'saved';
+    renderStories();
+    updateSavedBadge();
+    $('count').textContent = isSavedView ? 'Lowongan tersimpan' + (items.length ? ' · ' + items.length : '')
+      : (items.length ? items.length + ' lowongan' + (S.kab ? ' di ' + S.kab : '') : '');
     if (!items.length) {
-      box.innerHTML = '<div class="post empty"><b>Belum ada loker untuk pilihan ini</b>Coba hapus filter, atau cek lagi beberapa hari ke depan.</div>';
+      box.innerHTML = isSavedView
+        ? '<div class="post empty"><b>Belum ada yang disimpan</b>Tekan ' + I.save.replace('<svg', '<svg style="width:16px;height:16px;vertical-align:-3px"') +
+          ' <b style="display:inline">Simpan</b> pada lowongan yang menarik agar mudah dibuka lagi.</div>'
+        : '<div class="post empty"><b>Belum ada loker untuk pilihan ini</b>Coba hapus filter, atau cek lagi beberapa hari ke depan.</div>';
       return;
     }
     box.innerHTML = items.slice(0, S.shown).map(function (j) { return postHtml(j, false); }).join('');
@@ -239,7 +292,7 @@
   }
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (en) {
-      if (en[0].isIntersecting && $('sentinel').getAttribute('data-more') && S.view === 'list') { S.shown += PAGE; renderList(); }
+      if (en[0].isIntersecting && $('sentinel').getAttribute('data-more') && (S.view === 'list' || S.view === 'saved')) { S.shown += PAGE; renderList(); }
     }, { rootMargin: '600px' }).observe($('sentinel'));
   } else { S.shown = 1e6; }
 
@@ -275,7 +328,10 @@
       '</div>' +
       '<div class="big-actions">' +
         (lamar ? '<a class="btn lamar" data-lamar="' + esc(j.id) + '" href="' + esc(lamar.href) + '" target="_blank" rel="noopener">' + I.send + esc(lamar.label) + '</a>' : '') +
-        '<button type="button" class="btn share" data-share="' + esc(j.id) + '">' + I.share + 'Bagikan ke teman</button>' +
+        '<div class="two">' +
+          '<button type="button" class="btn share" data-share="' + esc(j.id) + '">' + I.share + 'Bagikan</button>' +
+          saveBtn(j, 'btn share') +
+        '</div>' +
         (INFO.waAdmin ? '<button type="button" class="btn lapor" data-report="' + esc(j.id) + '">' + I.flag + 'Laporkan lowongan ini</button>' : '') +
       '</div>' +
       '<p class="legal">Info ini disebarkan Pemerintah Desa Merden sebagai layanan informasi. Proses seleksi sepenuhnya oleh perusahaan. ' +
@@ -284,10 +340,20 @@
 
   /* ---------- Aksi pada posting (satu pendengar untuk semua) ---------- */
   function onPostClick(e) {
-    var t = e.target.closest('[data-open],[data-share],[data-report],[data-zoom],[data-lamar],[data-home]');
+    var t = e.target.closest('[data-share],[data-report],[data-zoom],[data-lamar],[data-home],[data-save],[data-open]');
     if (!t) return;
     if (t.hasAttribute('data-home')) { openList(true); return; }
     if (t.hasAttribute('data-lamar')) { catat(t.getAttribute('data-lamar'), 'Lamar'); return; }
+    if (t.hasAttribute('data-save')) {
+      var sid = t.getAttribute('data-save'), on = toggleSave(sid);
+      document.querySelectorAll('[data-save="' + sid + '"]').forEach(function (b) {
+        b.classList.toggle('saved', on); b.setAttribute('aria-pressed', String(on));
+        var sp = b.querySelector('span'); if (sp) sp.textContent = on ? 'Tersimpan' : 'Simpan';
+      });
+      toast(on ? 'Disimpan. Buka lagi di menu Tersimpan.' : 'Dihapus dari Tersimpan.');
+      if (!on && S.view === 'saved') renderList();
+      return;
+    }
     var id = t.getAttribute('data-open') || t.getAttribute('data-share') || t.getAttribute('data-report') || t.getAttribute('data-zoom');
     var j = findJob(id); if (!j) return;
     if (t.hasAttribute('data-open')) openDetail(id, true);
@@ -297,6 +363,10 @@
   }
   $('list').addEventListener('click', onPostClick);
   $('detail').addEventListener('click', onPostClick);
+  $('stories').addEventListener('click', onPostClick);
+  $('list').addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.post-b[data-open]')) { e.preventDefault(); openDetail(e.target.getAttribute('data-open'), true); }
+  });
 
   function share(j) {
     var link = jobUrl(j.id);
@@ -351,24 +421,46 @@
   /* ---------- Navigasi (?id=LK-0001 dan ?v=tips bisa dibagikan) ---------- */
   function showView(v) {
     S.view = v;
-    $('vList').classList.toggle('hidden', v !== 'list');
+    $('vList').classList.toggle('hidden', v !== 'list' && v !== 'saved');
     $('vDetail').classList.toggle('hidden', v !== 'detail');
     $('vTips').classList.toggle('hidden', v !== 'tips');
     $('backBtn').classList.toggle('hidden', v === 'list');
     $('tipsBtn').classList.toggle('on', v === 'tips');
+    $('notice').style.display = v === 'saved' ? 'none' : '';
     if (v !== 'detail') document.title = INFO.nama + ' – Info Loker Pemuda Desa Merden';
+    markNav();
     window.scrollTo(0, 0);
   }
+  function markNav() {
+    var searching = !$('filterPanel').classList.contains('hidden');
+    document.querySelectorAll('.bottom-nav [data-nav]').forEach(function (b) {
+      var n = b.getAttribute('data-nav');
+      var on = n === 'search' ? searching : !searching && (n === S.view || (n === 'list' && S.view === 'detail'));
+      b.classList.toggle('on', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+  document.querySelector('.bottom-nav').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-nav]'); if (!b) return;
+    var n = b.getAttribute('data-nav');
+    if (n !== 'search') { $('filterPanel').classList.add('hidden'); $('searchBtn').setAttribute('aria-expanded', 'false'); }
+    if (n === 'list') { if (S.view === 'list') window.scrollTo({ top: 0, behavior: 'smooth' }); else openList(true); }
+    else if (n === 'search') toggleSearch();
+    else if (n === 'saved') openSaved(true);
+    else if (n === 'tips') openTips(true);
+  });
   var pushed = 0; // jumlah langkah navigasi di dalam halaman ini (untuk tombol kembali)
   function push(query) { try { history.pushState(null, '', baseUrl() + query); pushed++; } catch (e) { /* abaikan */ } }
   function openDetail(id, record) { S.currentId = id; renderDetail(id); showView('detail'); if (record) push('?id=' + encodeURIComponent(id)); }
-  function openList(record) { S.currentId = ''; renderList(); showView('list'); if (record) push(''); }
+  function openList(record) { S.currentId = ''; S.view = 'list'; S.shown = PAGE; renderList(); showView('list'); if (record) push(''); }
+  function openSaved(record) { S.currentId = ''; S.view = 'saved'; S.shown = 1e6; renderList(); showView('saved'); if (record) push('?v=saved'); }
   function openTips(record) { showView('tips'); if (record) push('?v=tips'); }
   function route() {
     var p = new URLSearchParams(location.search);
     var id = (p.get('id') || '').slice(0, 20);
     if (id) openDetail(id, false);
     else if (p.get('v') === 'tips') openTips(false);
+    else if (p.get('v') === 'saved') openSaved(false);
     else openList(false);
   }
   $('backBtn').addEventListener('click', function () {
@@ -392,7 +484,7 @@
     setupFilters();
   }
   function refreshView() {
-    if (S.view === 'list') renderList();
+    if (S.view === 'list' || S.view === 'saved') renderList();
     else if (S.view === 'detail' && S.currentId) renderDetail(S.currentId);
   }
   function load() {
@@ -418,8 +510,8 @@
 
   /* ---------- Mulai ---------- */
   setupFilters();
-  var saved = cacheRead();
-  if (saved) { apply(saved); S.loaded = true; }
+  var cached = cacheRead();
+  if (cached) { apply(cached); S.loaded = true; }
   route();
   load();
 })();
