@@ -28,7 +28,8 @@
     share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5l7 7-7 7"/><path d="M21 12H10a7 7 0 00-7 7"/></svg>',
     info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.5"/></svg>',
     flag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>',
-    save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>'
+    save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+    globe: '<svg class="globe" viewBox="0 0 24 24" aria-label="Publik"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 010 18a14 14 0 010-18"/></svg>'
   };
 
   /* ---------- Lowongan tersimpan (di perangkat ini saja) ---------- */
@@ -71,6 +72,27 @@
     if (d === 1) return 'Kemarin';
     if (d < 7) return d + ' hari lalu';
     return tglPendek(iso);
+  }
+  /** Waktu gaya Facebook dari tanggal-jam lengkap: "Baru saja", "5 mnt", "3 jam", "Kemarin", "3 hari", "12 Nov". */
+  function waktuPost(j) {
+    if (!j.waktu) return waktuLalu(j.dicek);
+    var ms = Date.now() - Date.parse(j.waktu);
+    if (isNaN(ms)) return waktuLalu(j.dicek);
+    var m = Math.floor(ms / 6e4);
+    if (m < 1) return 'Baru saja';
+    if (m < 60) return m + ' mnt';
+    if (m < 24 * 60) return Math.floor(m / 60) + ' jam';
+    return waktuLalu(j.dicek);
+  }
+  /** Teks caption → HTML aman: tautan, email, dan nomor WA bisa diketuk. */
+  function linkify(text) {
+    return esc(text).replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]])|([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})|((?:\+62|62|0)8[\d\-. ]{7,15}\d)/g,
+      function (all, url, mail, tel) {
+        if (url) return '<a href="' + url + '" target="_blank" rel="noopener nofollow">' + url + '</a>';
+        if (mail) return '<a href="mailto:' + mail + '">' + mail + '</a>';
+        var n = tel.replace(/[^\d]/g, '').replace(/^0/, '62');
+        return '<a href="https://wa.me/' + n + '" target="_blank" rel="noopener">' + tel + '</a>';
+      });
   }
   function eduText(p) { return (!p || p === 'Tidak disyaratkan') ? 'Semua lulusan' : 'Min. ' + p; }
   function isSafeUrl(u) { return /^https?:\/\//i.test(String(u || '').trim()); }
@@ -179,7 +201,7 @@
     return S.jobs.filter(function (j) {
       if (expired(j)) return false;
       if (onlySaved && !isSaved(j.id)) return false;
-      if (q && (j.judul + ' ' + j.perusahaan + ' ' + j.kategori + ' ' + j.alamat + ' ' + j.kabupaten).toLowerCase().indexOf(q) < 0) return false;
+      if (q && (j.judul + ' ' + j.perusahaan + ' ' + j.kategori + ' ' + j.alamat + ' ' + j.kabupaten + ' ' + j.ringkasan).toLowerCase().indexOf(q) < 0) return false;
       if (S.kab && j.kabupaten !== S.kab) return false;
       if (edu && Math.max(0, EDU.indexOf(j.pendidikan)) > EDU.indexOf(edu)) return false;
       if (tanpa && !j.tanpaPengalaman) return false;
@@ -211,24 +233,41 @@
       '<img src="' + esc(j.foto) + '" data-fid="' + esc(j.fotoId || '') + '" alt="Flyer lowongan ' + esc(j.judul) + ' di ' + esc(j.perusahaan) +
       '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></button>';
   }
+  var LOGO = (document.querySelector('.logo') || {}).getAttribute ? document.querySelector('.logo').getAttribute('src') : 'icons/icon-192.png';
+  function isPost(j) { return j.jenis === 'post'; }
+  function headerHtml(j) {
+    if (isPost(j)) {
+      return '<div class="post-h"><img class="ava" src="' + LOGO + '" alt="" width="40" height="40">' +
+        '<div class="who"><div class="co"><span>' + esc(INFO.nama === 'KARIR MERDEN' ? 'Karir Merden' : INFO.nama) + '</span>' + I.check + '</div>' +
+        '<div class="sub">' + esc(waktuPost(j)) + (j.kabupaten ? ' · ' + esc(j.kabupaten) : '') + ' · ' + I.globe + '</div></div></div>';
+    }
+    return '<div class="post-h"><span class="ava" style="background:' + colorFor(j.perusahaan) + '" aria-hidden="true">' + esc(initials(j.perusahaan)) + '</span>' +
+      '<div class="who"><div class="co"><span>' + esc(j.perusahaan || 'Perusahaan') + '</span>' + (j.label ? I.check : '') + '</div>' +
+      '<div class="sub">' + esc(j.kabupaten) + (j.dicek ? ' · ' + esc(waktuPost(j)) : '') + (j.label ? ' · Dicek admin' : '') + '</div></div></div>';
+  }
   function postHtml(j, full) {
-    var pts = points(j.ringkasan);
-    var ring = pts.length
-      ? '<ul class="ring' + (full || pts.length <= 3 ? '' : ' clamp') + '">' + pts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' +
-        (!full && pts.length > 3 ? '<button type="button" class="more-btn" data-open="' + esc(j.id) + '">Lihat selengkapnya</button>' : '')
-      : '';
     var lamar = lamarLink(j);
-    return '<article class="post" data-id="' + esc(j.id) + '">' +
-      '<div class="post-h"><span class="ava" style="background:' + colorFor(j.perusahaan) + '" aria-hidden="true">' + esc(initials(j.perusahaan)) + '</span>' +
-        '<div class="who"><div class="co"><span>' + esc(j.perusahaan || 'Perusahaan') + '</span>' + (j.label ? I.check : '') + '</div>' +
-        '<div class="sub">' + esc(j.kabupaten) + (j.dicek ? ' · ' + esc(waktuLalu(j.dicek)) : '') + (j.label ? ' · Dicek admin' : '') + '</div></div></div>' +
-      '<div class="post-b"' + (full ? '' : ' data-open="' + esc(j.id) + '" role="link" tabindex="0" aria-label="Buka detail ' + esc(j.judul) + '"') + '>' +
-        '<h2>' + esc(j.judul) + '</h2>' + facts(j) + ring + '</div>' +
+    var body;
+    if (isPost(j)) {
+      var cap = String(j.ringkasan || '');
+      var long = !full && (cap.length > 260 || cap.split('\n').length > 5);
+      body = cap ? '<div class="post-b"><div class="caption' + (long ? ' clamp' : '') + '">' + linkify(cap) + '</div>' +
+        (long ? '<button type="button" class="more-btn" data-more="1">Lihat selengkapnya</button>' : '') + '</div>' : '<div class="post-b slim"></div>';
+    } else {
+      var pts = points(j.ringkasan);
+      var ring = pts.length
+        ? '<ul class="ring' + (full || pts.length <= 3 ? '' : ' clamp') + '">' + pts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' +
+          (!full && pts.length > 3 ? '<button type="button" class="more-btn" data-open="' + esc(j.id) + '">Lihat selengkapnya</button>' : '')
+        : '';
+      body = '<div class="post-b"' + (full ? '' : ' data-open="' + esc(j.id) + '" role="link" tabindex="0" aria-label="Buka detail ' + esc(j.judul) + '"') + '>' +
+        '<h2>' + esc(j.judul) + '</h2>' + facts(j) + ring + '</div>';
+    }
+    return '<article class="post" data-id="' + esc(j.id) + '">' + headerHtml(j) + body +
       mediaHtml(j) +
       '<div class="stats">' + viewsHtml(j) + (j.alamat ? '<span>' + I.pin + esc(j.alamat.length > 40 ? j.alamat.slice(0, 38) + '…' : j.alamat) + '</span>' : '') + '</div>' +
       (full ? '' : '<div class="actions">' +
         (lamar ? '<a class="act primary" data-lamar="' + esc(j.id) + '" href="' + esc(lamar.href) + '" target="_blank" rel="noopener">' + I.send + 'Lamar</a>'
-               : '<button type="button" class="act primary" data-open="' + esc(j.id) + '">' + I.send + 'Lamar</button>') +
+               : '<button type="button" class="act primary" data-open="' + esc(j.id) + '">' + (isPost(j) ? I.info + 'Detail' : I.send + 'Lamar') + '</button>') +
         '<button type="button" class="act" data-share="' + esc(j.id) + '">' + I.share + 'Bagikan</button>' +
         saveBtn(j, 'act') +
       '</div>') + '</article>';
@@ -309,11 +348,11 @@
       box.innerHTML = '<div class="post empty"><b>Lowongan sudah ditutup</b>Batas lamaran ' + esc(tgl(j.batas)) + ' sudah lewat.<br><button type="button" data-home="1">Lihat loker lain</button></div>';
       return;
     }
-    document.title = j.judul + ' – ' + j.perusahaan + ' | ' + INFO.nama;
+    document.title = j.judul + (j.perusahaan ? ' – ' + j.perusahaan : '') + ' | ' + INFO.nama;
     if (S.loaded && catat(j.id, 'Lihat')) j.dilihat = (Number(j.dilihat) || 0) + 1;
     var lamar = lamarLink(j);
     var sumber = isSafeUrl(j.urlSumber) ? '<a href="' + esc(j.urlSumber) + '" target="_blank" rel="noopener">Buka iklan asli</a>' : esc(j.urlSumber || '-');
-    box.innerHTML = postHtml(j, true).replace('</article>', '') +
+    box.innerHTML = postHtml(j, true).replace('</article>', '') + (isPost(j) ? '' :
       '<div class="post-b" style="padding-top:0">' +
         '<dl class="dl">' +
           '<dt>Lokasi</dt><dd>' + esc(j.kabupaten) + (j.alamat ? ' · ' + esc(j.alamat) : '') + '</dd>' +
@@ -325,7 +364,7 @@
         '</dl>' +
         '<div class="infobox"><b>' + esc(j.label || 'Sumber') + '</b><br>Dicek admin desa: ' + (j.dicek ? tgl(j.dicek) : '-') + '<br>Sumber: ' + sumber + '</div>' +
         (lamar ? '' : '<div class="infobox"><b>Cara melamar</b><br>' + esc(j.caraLamar || 'Lihat iklan asli') + '</div>') +
-      '</div>' +
+      '</div>') +
       '<div class="big-actions">' +
         (lamar ? '<a class="btn lamar" data-lamar="' + esc(j.id) + '" href="' + esc(lamar.href) + '" target="_blank" rel="noopener">' + I.send + esc(lamar.label) + '</a>' : '') +
         '<div class="two">' +
@@ -340,9 +379,14 @@
 
   /* ---------- Aksi pada posting (satu pendengar untuk semua) ---------- */
   function onPostClick(e) {
-    var t = e.target.closest('[data-share],[data-report],[data-zoom],[data-lamar],[data-home],[data-save],[data-open]');
+    if (e.target.closest('.caption a')) return; // tautan di caption: biarkan terbuka biasa
+    var t = e.target.closest('[data-share],[data-report],[data-zoom],[data-lamar],[data-home],[data-save],[data-more],[data-open]');
     if (!t) return;
     if (t.hasAttribute('data-home')) { openList(true); return; }
+    if (t.hasAttribute('data-more')) {
+      var c = t.parentNode.querySelector('.caption'); if (c) c.classList.remove('clamp');
+      t.remove(); return;
+    }
     if (t.hasAttribute('data-lamar')) { catat(t.getAttribute('data-lamar'), 'Lamar'); return; }
     if (t.hasAttribute('data-save')) {
       var sid = t.getAttribute('data-save'), on = toggleSave(sid);
@@ -370,10 +414,11 @@
 
   function share(j) {
     var link = jobUrl(j.id);
-    var text = 'Loker: ' + j.judul + ' – ' + j.perusahaan + ' (' + j.kabupaten + ')' + (j.gaji ? '\nGaji: ' + j.gaji : '') +
+    var where = [j.perusahaan, j.kabupaten].filter(Boolean).join(', ');
+    var text = 'Loker: ' + j.judul + (where ? ' – ' + where : '') + (j.gaji ? '\nGaji: ' + j.gaji : '') +
       '\nInfo dari KARIR MERDEN, Pemdes Merden.';
     if (navigator.share) {
-      navigator.share({ title: j.judul + ' – ' + j.perusahaan, text: text, url: link }).catch(function () { /* dibatalkan */ });
+      navigator.share({ title: j.judul, text: text, url: link }).catch(function () { /* dibatalkan */ });
     } else {
       window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + link), '_blank', 'noopener');
     }

@@ -1,8 +1,8 @@
-/* KARIR MERDEN — tampilan feed */
+/* KARIR MERDEN — tampilan feed (palet biru-putih ala Facebook) */
 :root {
   --bg: #f0f2f5; --card: #ffffff; --line: #e4e6eb; --line2: #ced0d4;
   --text: #050505; --text2: #65676b; --hover: #f2f3f5;
-  --brand: #14532d; --brand2: #166534; --brand-soft: #e7f5ec; --brand-on: #ffffff;
+  --brand: #1877f2; --brand2: #1877f2; --brand-soft: #e7f3ff; --brand-on: #ffffff;
   --warn-bg: #fff4e5; --warn-tx: #8a4b00; --danger: #c0262d; --danger-soft: #fdecec;
   --media-bg: #f0f2f5; --shadow: 0 1px 2px rgba(0, 0, 0, .12);
   --radius: 10px;
@@ -12,7 +12,7 @@
   :root:not([data-theme="light"]) {
     --bg: #18191a; --card: #242526; --line: #3a3b3c; --line2: #4e4f50;
     --text: #e4e6eb; --text2: #b0b3b8; --hover: #3a3b3c;
-    --brand: #2f9e5b; --brand2: #4cc27a; --brand-soft: #1f3a2a; --brand-on: #ffffff;
+    --brand: #2d88ff; --brand2: #4599ff; --brand-soft: #263951; --brand-on: #ffffff;
     --warn-bg: #3a2c12; --warn-tx: #f4c47a; --danger: #f2777a; --danger-soft: #3d2324;
     --media-bg: #18191a; --shadow: 0 1px 2px rgba(0, 0, 0, .4);
     color-scheme: dark;
@@ -21,7 +21,7 @@
 :root[data-theme="dark"] {
   --bg: #18191a; --card: #242526; --line: #3a3b3c; --line2: #4e4f50;
   --text: #e4e6eb; --text2: #b0b3b8; --hover: #3a3b3c;
-  --brand: #2f9e5b; --brand2: #4cc27a; --brand-soft: #1f3a2a; --brand-on: #ffffff;
+  --brand: #2d88ff; --brand2: #4599ff; --brand-soft: #263951; --brand-on: #ffffff;
   --warn-bg: #3a2c12; --warn-tx: #f4c47a; --danger: #f2777a; --danger-soft: #3d2324;
   --media-bg: #18191a; --shadow: 0 1px 2px rgba(0, 0, 0, .4);
   color-scheme: dark;
@@ -43,7 +43,7 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 .logo { width: 40px; height: 40px; border-radius: 11px; display: block;
   font-weight: 800; letter-spacing: .5px; flex: none; }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
-.brand-text b { font-size: 18px; letter-spacing: .3px; color: var(--brand2); white-space: nowrap; }
+.brand-text b { font-size: 24px; line-height: 1.05; font-weight: 800; letter-spacing: -.6px; color: var(--brand); white-space: nowrap; }
 .brand-text small { color: var(--text2); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-actions { display: flex; gap: 8px; }
 .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--hover); display: grid; place-items: center; cursor: pointer; }
@@ -205,3 +205,41 @@ h1.count { font-weight: 600; }
 .sheet { position: fixed; inset: 0; z-index: 55; background: rgba(0, 0, 0, .45); display: flex; align-items: flex-end; justify-content: center; }
 .sheet-in { width: 100%; max-width: 480px; background: var(--card); border-radius: 16px 16px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom)); }
 .sheet-in ol { padding-left: 20px; line-height: 1.7; }
+
+/* ---------- Gaya Facebook: biru-putih ---------- */
+body { font-family: system-ui, -apple-system, "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif; }
+.brand-text small { font-size: 12px; }
+.chip { background: var(--hover); color: var(--text2); }
+.chip.on { background: var(--brand-soft); color: var(--brand); }
+.icon-btn { color: var(--text); }
+.fact { background: var(--hover); }
+.fact.new { background: var(--brand); color: #fff; }
+.fact.money { background: var(--brand-soft); color: var(--brand); }
+.fact.money svg { color: var(--brand); }
+.post-h .co svg { color: var(--brand); }
+.post-h img.ava { border-radius: 50%; object-fit: cover; }
+.post-h .sub { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.post-h .sub .globe { width: 12px; height: 12px; stroke-width: 2; color: var(--text2); }
+.post-b.slim { padding: 4px 0 0; }
+.caption { font-size: 15px; line-height: 1.38; white-space: pre-line; overflow-wrap: anywhere; }
+.caption.clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.caption a { color: var(--brand); font-weight: 600; text-decoration: none; }
+.more-btn { color: var(--text2); }
+.act.primary { color: var(--brand); }
+.act.saved, .btn.saved { color: var(--brand); }
+.btn.lamar { background: var(--brand); }
+.btn.lamar:hover { filter: brightness(.95); }
+.notice { background: var(--card); color: var(--text); box-shadow: var(--shadow); border-left: 4px solid var(--brand); }
+.notice-ic { background: var(--brand); color: #fff; }
+.story.fresh .ring-o { background: var(--brand); }
+.story .ring-o > * { border-color: var(--card); }
+.stories { background: var(--card); box-shadow: var(--shadow); padding: 12px; margin-bottom: 12px; }
+@media (min-width: 700px) { .stories { border-radius: var(--radius); } }
+.bottom-nav button.on { color: var(--brand); }
+.bottom-nav button.on::before { background: var(--brand); }
+.pill-btn, .btn-sm { background: var(--brand); }
+.media { border: 0; }
+.stats { border-top: 0; }
+.actions { border-top: 1px solid var(--line); }
+.logo { border-radius: 50%; }
+.brand-text b { text-transform: lowercase; }
