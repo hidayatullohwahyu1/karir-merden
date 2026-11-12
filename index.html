@@ -2,50 +2,69 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>KARIR MERDEN – Info Loker Pemuda Desa Merden</title>
   <meta name="description" content="Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.">
-  <meta name="theme-color" content="#14532d">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#18191a" media="(prefers-color-scheme: dark)">
   <meta property="og:title" content="KARIR MERDEN – Info Loker Pemuda Desa Merden">
-  <meta property="og:description" content="Lowongan kerja Banjarnegara, Purbalingga, Banyumas, dan sekitarnya. Dicek admin desa, gratis.">
+  <meta property="og:description" content="Lowongan kerja Banjarnegara, Purbalingga, Banyumas, Kebumen, dan sekitarnya. Dicek admin desa, gratis.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314532d'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='26' fill='white' text-anchor='middle'%3EKM%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <h1 id="nama">KARIR MERDEN</h1>
-      <p>Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.</p>
-      <div class="nav">
-        <button type="button" id="navLoker" class="on">Loker</button>
-        <button type="button" id="navTips">Tips aman melamar</button>
+  <header class="topbar">
+    <div class="topbar-in">
+      <button type="button" class="icon-btn back hidden" id="backBtn" aria-label="Kembali ke daftar loker">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <a class="brand" href="./" id="brandLink">
+        <span class="logo" aria-hidden="true">KM</span>
+        <span class="brand-text"><b id="nama">KARIR MERDEN</b><small>Info loker Pemdes Merden</small></span>
+      </a>
+      <div class="top-actions">
+        <button type="button" class="icon-btn" id="searchBtn" aria-label="Cari dan saring lowongan" aria-expanded="false" aria-controls="filterPanel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="tipsBtn" aria-label="Tips aman melamar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </button>
       </div>
     </div>
+    <div class="filter-panel hidden" id="filterPanel">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="Cari jabatan atau perusahaan" aria-label="Cari jabatan atau perusahaan" autocomplete="off">
+      </div>
+      <div class="frow">
+        <select id="fEdu" aria-label="Lulusan saya"><option value="">Semua lulusan</option></select>
+        <label class="switch"><input type="checkbox" id="fTanpa"><span>Tanpa pengalaman</span></label>
+      </div>
+    </div>
+    <nav class="chips" id="chips" aria-label="Pilih daerah"></nav>
   </header>
 
-  <main class="wrap">
+  <main class="feed" id="main">
     <!-- DAFTAR -->
     <section id="vList">
-      <div class="filters" role="search">
-        <input type="search" id="q" placeholder="Cari jabatan atau perusahaan" aria-label="Cari jabatan atau perusahaan">
-        <div class="frow">
-          <select id="fKab" aria-label="Kabupaten"><option value="">Semua daerah</option></select>
-          <select id="fEdu" aria-label="Lulusan saya"><option value="">Semua lulusan</option></select>
-        </div>
-        <label class="check"><input type="checkbox" id="fTanpa"> Hanya yang tanpa pengalaman</label>
+      <div class="notice" id="notice">
+        <span class="notice-ic" aria-hidden="true">!</span>
+        <p><b>Lowongan resmi tidak pernah memungut biaya.</b> Semua loker di sini dicek admin Desa Merden. Ragu? Tekan "Laporkan".</p>
+        <button type="button" class="notice-x" id="noticeX" aria-label="Tutup pengumuman">×</button>
       </div>
-      <div id="count" class="count"></div>
-      <div id="list"><div class="loading">Memuat lowongan…</div></div>
+      <div class="count" id="count" aria-live="polite"></div>
+      <div id="list"></div>
+      <div id="sentinel" aria-hidden="true"></div>
     </section>
 
     <!-- DETAIL -->
     <section id="vDetail" class="hidden">
-      <button type="button" class="back" id="backBtn">‹ Kembali ke daftar loker</button>
       <div id="detail"></div>
     </section>
 
     <!-- TIPS -->
     <section id="vTips" class="hidden">
-      <div class="tips">
+      <article class="post tips">
         <h2>Tips aman melamar kerja</h2>
         <p>Lowongan asli <b>tidak pernah</b> meminta uang dari pelamar. Waspadai 5 ciri lowongan palsu ini:</p>
         <ol>
@@ -56,16 +75,24 @@
           <li>Diminta mengirim foto KTP, KK, atau data rekening sebelum ada wawancara resmi.</li>
         </ol>
         <p>Untuk kerja ke luar negeri, pastikan melalui perusahaan penempatan resmi (P3MI) dan cek ke Dinas Tenaga Kerja.</p>
-        <p><b>Ragu dengan sebuah lowongan?</b> Tekan tombol "Laporkan lowongan ini" di halaman detail, atau tanyakan ke kantor desa.</p>
-        <p><b>Dinas Tenaga Kerja Kabupaten Banjarnegara</b><br>
+        <p><b>Ragu dengan sebuah lowongan?</b> Tekan tombol "Laporkan" di lowongan itu, atau tanyakan ke kantor desa.</p>
+        <div class="infobox"><b>Dinas Tenaga Kerja Kabupaten Banjarnegara</b><br>
           Jl. Letjend Suprapto No. 234A Semampir, Banjarnegara<br>
           Telp. (0286) 591012<br>
-          Layanan Kartu Kuning (AK-1) tersedia lewat SIAPKerja.</p>
-      </div>
+          Layanan Kartu Kuning (AK-1) tersedia lewat SIAPKerja.</div>
+      </article>
     </section>
 
-    <footer>Pemerintah Desa Merden, Kec. Purwanegara, Kab. Banjarnegara</footer>
+    <footer>Pemerintah Desa Merden · Kec. Purwanegara · Kab. Banjarnegara</footer>
   </main>
+
+  <!-- FOTO DIPERBESAR -->
+  <div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto flyer">
+    <button type="button" class="lb-x" id="lbClose" aria-label="Tutup foto">×</button>
+    <img id="lbImg" alt="">
+  </div>
+
+  <div class="toast hidden" id="toast" role="status"></div>
 
   <script src="config.js"></script>
   <script src="app.js"></script>
