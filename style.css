@@ -102,3 +102,11 @@ footer { text-align: center; color: var(--text2); font-size: 13px; padding: 16px
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: #323232; color: #fff;
   padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100% - 32px); }
 .poin { display: block; margin-top: 6px; }
+
+/* ---------- Teks tidak terpotong & ukuran proporsional ---------- */
+.who b { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; }
+.brand b { font-size: clamp(19px, 6.4vw, 24px); }
+.safe { font-size: 14px; line-height: 1.5; }
+.chip { font-size: 14px; }
+.act { font-size: 15px; white-space: nowrap; }
+.txt strong { display: block; line-height: 1.3; }

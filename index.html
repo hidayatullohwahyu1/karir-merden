@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Karir Merden – Info Loker Desa Merden</title>
-  <meta name="description" content="Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.">
+  <title>Karir Merden – Informasi Lowongan Kerja Desa Merden</title>
+  <meta name="description" content="Informasi lowongan kerja bagi pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#242526" media="(prefers-color-scheme: dark)">
-  <meta property="og:title" content="Karir Merden – Info Loker Desa Merden">
-  <meta property="og:description" content="Lowongan kerja Banjarnegara dan sekitarnya. Dicek admin desa, gratis.">
+  <meta property="og:title" content="Karir Merden – Informasi Lowongan Kerja Desa Merden">
+  <meta property="og:description" content="Lowongan kerja di Banjarnegara dan sekitarnya. Diperiksa admin desa, gratis.">
   <meta property="og:image" content="icons/icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Karir Merden">
-  <link rel="stylesheet" href="style.css?v=20261113e">
+  <link rel="stylesheet" href="style.css?v=20261113f">
 </head>
 <body>
   <header class="topbar">
@@ -24,45 +24,45 @@
         <img class="logo" src="icons/icon-192.png" alt="" width="36" height="36">
         <b>karir merden</b>
       </a>
-      <button type="button" class="pill hidden" data-install>Pasang</button>
+      <button type="button" class="pill hidden" data-install aria-label="Pasang aplikasi">Pasang</button>
       <button type="button" class="round" id="searchBtn" aria-label="Cari lowongan" aria-expanded="false" aria-controls="searchRow">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       </button>
     </div>
     <div class="bar-in hidden" id="searchRow">
-      <input type="search" id="q" placeholder="Cari posisi, perusahaan, atau kata lain" aria-label="Cari lowongan" autocomplete="off">
+      <input type="search" id="q" placeholder="Cari posisi, perusahaan, atau kata kunci" aria-label="Cari lowongan" autocomplete="off">
     </div>
     <nav class="chips" id="chips" aria-label="Pilih daerah"></nav>
   </header>
 
   <main class="feed">
-    <p class="safe">Lowongan resmi <b>tidak pernah memungut biaya</b>. <button type="button" class="link" data-tips>Tips aman melamar</button></p>
+    <p class="safe">Lowongan resmi <b>tidak pernah memungut biaya</b>. <button type="button" class="link" data-tips>Kiat aman melamar</button></p>
     <div id="focus"></div>
     <div id="list"></div>
     <div id="more" aria-hidden="true"></div>
     <footer>
       Pemerintah Desa Merden · Kec. Purwanegara · Kab. Banjarnegara<br>
-      <button type="button" class="link" data-tips>Tips aman melamar</button> · <a href="admin.html">Masuk admin</a>
+      <button type="button" class="link" data-tips>Kiat aman melamar</button> · <a href="admin.html">Masuk admin</a>
     </footer>
   </main>
 
-  <div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto flyer">
+  <div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto lowongan">
     <button type="button" class="lb-x" id="lbClose" aria-label="Tutup foto">×</button>
     <img id="lbImg" alt="">
   </div>
 
   <div class="sheet hidden" id="tips" role="dialog" aria-modal="true" aria-labelledby="tipsTitle">
     <div class="sheet-in">
-      <h2 id="tipsTitle">Tips aman melamar kerja</h2>
-      <p>Lowongan asli <b>tidak pernah</b> meminta uang. Waspadai jika:</p>
+      <h2 id="tipsTitle">Kiat aman melamar kerja</h2>
+      <p>Lowongan resmi <b>tidak pernah</b> meminta uang. Waspadai jika Anda:</p>
       <ol>
-        <li>Diminta biaya pendaftaran, pelatihan, seragam, medical check-up, atau tiket.</li>
-        <li>Gaji sangat besar untuk syarat yang sangat mudah.</li>
-        <li>Hanya ada nomor WA, tanpa nama perusahaan dan alamat jelas.</li>
-        <li>Langsung "diterima" tanpa wawancara, lalu didesak transfer.</li>
-        <li>Diminta foto KTP, KK, atau data rekening sebelum wawancara resmi.</li>
+        <li>diminta membayar biaya pendaftaran, pelatihan, seragam, pemeriksaan kesehatan, atau tiket;</li>
+        <li>dijanjikan gaji sangat besar dengan syarat yang sangat mudah;</li>
+        <li>hanya diberi nomor WhatsApp, tanpa nama perusahaan dan alamat yang jelas;</li>
+        <li>langsung “diterima” tanpa wawancara, lalu didesak mentransfer uang; atau</li>
+        <li>diminta mengirim foto KTP, KK, atau data rekening sebelum wawancara resmi.</li>
       </ol>
-      <p class="muted">Ragu? Laporkan lewat tombol ⋯ di postingan, atau tanyakan ke kantor desa. Disnaker Banjarnegara: (0286) 591012.</p>
+      <p class="muted">Ragu? Laporkan melalui tombol ··· pada unggahan, atau tanyakan ke kantor desa. Dinas Tenaga Kerja Kabupaten Banjarnegara: (0286) 591012.</p>
       <button type="button" class="btn" data-close>Mengerti</button>
     </div>
   </div>
@@ -71,8 +71,8 @@
     <div class="sheet-in">
       <h2>Pasang di iPhone</h2>
       <ol>
-        <li>Tekan tombol <b>Bagikan</b> di bawah layar Safari.</li>
-        <li>Pilih <b>Tambah ke Layar Utama</b>, lalu <b>Tambah</b>.</li>
+        <li>Ketuk tombol <b>Bagikan</b> di bagian bawah layar Safari.</li>
+        <li>Pilih <b>Tambah ke Layar Utama</b>, lalu ketuk <b>Tambah</b>.</li>
       </ol>
       <button type="button" class="btn" data-close data-ios-x>Mengerti</button>
     </div>
@@ -80,8 +80,8 @@
 
   <div class="toast hidden" id="toast" role="status"></div>
 
-  <script src="config.js?v=20261113e"></script>
-  <script src="pwa.js?v=20261113e"></script>
-  <script src="app.js?v=20261113e"></script>
+  <script src="config.js?v=20261113f"></script>
+  <script src="pwa.js?v=20261113f"></script>
+  <script src="app.js?v=20261113f"></script>
 </body>
 </html>

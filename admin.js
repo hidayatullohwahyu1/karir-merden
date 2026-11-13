@@ -1,5 +1,5 @@
-/* Karir Merden — admin di HP. Alur: Masuk → Posting flyer → pilih foto → caption → Posting.
-   Semua permintaan: POST ke API_URL (badan teks JSON). Token login disimpan di HP ini 30 hari. */
+/* Karir Merden — admin di ponsel. Alur: Masuk → Unggah foto lowongan → pilih foto → keterangan → Unggah.
+   Semua permintaan: POST ke API_URL (badan teks JSON). Token masuk disimpan di ponsel ini selama 30 hari. */
 (function () {
   'use strict';
   var API = (window.KM_CONFIG && window.KM_CONFIG.API_URL) || '';
@@ -13,7 +13,7 @@
   var tt; function toast(m) { var t = $('toast'); t.textContent = m; t.classList.remove('hidden'); clearTimeout(tt); tt = setTimeout(function () { t.classList.add('hidden'); }, 3000); }
   function call(body) {
     return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), credentials: 'omit' })
-      .then(function (r) { if (!r.ok) throw new Error('Server menjawab ' + r.status); return r.json(); })
+      .then(function (r) { if (!r.ok) throw new Error('Server tidak merespons dengan benar (kode ' + r.status + ').'); return r.json(); })
       .then(function (d) { if (d && d.auth === false) { logout(); throw new Error(d.error || 'Sesi berakhir.'); } return d; });
   }
 
@@ -23,7 +23,7 @@
     bar(); if (on) loadRecent();
   }
   function logout() { token = ''; store(TOKEN_KEY, null); show(false); }
-  $('logout').addEventListener('click', function () { if (!busy || confirm('Masih memposting. Tetap keluar?')) logout(); });
+  $('logout').addEventListener('click', function () { if (!busy || confirm('Unggahan masih berjalan. Tetap keluar?')) logout(); });
   $('loginForm').addEventListener('submit', function (e) {
     e.preventDefault(); $('loginErr').classList.add('hidden'); $('loginBtn').disabled = true; $('loginBtn').textContent = 'Memeriksa…';
     call({ api: 'login', password: $('pw').value })
@@ -46,7 +46,7 @@
         var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
         URL.revokeObjectURL(u); ok(c.toDataURL('image/jpeg', 0.85));
       };
-      img.onerror = function () { URL.revokeObjectURL(u); fail(new Error('Foto tidak bisa dibaca')); };
+      img.onerror = function () { URL.revokeObjectURL(u); fail(new Error('Foto tidak dapat dibaca.')); };
       img.src = u;
     });
   }
@@ -67,10 +67,10 @@
     var ae = document.activeElement, fk = ae && ae.getAttribute && ae.getAttribute('data-cap'), s0 = fk ? ae.selectionStart : 0;
     $('drafts').innerHTML = drafts.map(function (d) {
       var edit = d.state === 'edit' || d.state === 'err';
-      var st = d.state === 'ok' ? '<div class="st ok">✓ ' + esc(d.msg) + '</div>' : d.state === 'err' ? '<div class="st err">' + esc(d.msg) + '</div>' : d.state === 'run' ? '<div class="st run">Memposting…</div>' : '';
+      var st = d.state === 'ok' ? '<div class="st ok">✓ ' + esc(d.msg) + '</div>' : d.state === 'err' ? '<div class="st err">' + esc(d.msg) + '</div>' : d.state === 'run' ? '<div class="st run">Mengunggah…</div>' : '';
       return '<div class="box d">' +
-        '<textarea data-cap="' + d.key + '" placeholder="Tulis caption… (boleh kosong)"' + (edit ? '' : ' disabled') + '>' + esc(d.caption) + '</textarea>' +
-        (d.thumb ? '<img src="' + esc(d.thumb) + '" alt="Foto flyer">' : '') + st +
+        '<textarea data-cap="' + d.key + '" placeholder="Tulis keterangan… (boleh dikosongkan)"' + (edit ? '' : ' disabled') + '>' + esc(d.caption) + '</textarea>' +
+        (d.thumb ? '<img src="' + esc(d.thumb) + '" alt="Foto lowongan">' : '') + st +
         (edit ? '<button type="button" class="x" data-x="' + d.key + '" aria-label="Hapus">×</button>' : '') + '</div>';
     }).join('');
     document.querySelectorAll('.d textarea').forEach(grow);
@@ -84,8 +84,8 @@
     var n = waiting().length;
     $('postbar').classList.toggle('hidden', !token || !drafts.length);
     $('goBtn').disabled = busy || !n;
-    $('goBtn').textContent = busy ? 'Memposting…' : n > 1 ? 'Posting ' + n : 'Posting';
-    $('postInfo').textContent = n ? n + ' siap diposting' : '';
+    $('goBtn').textContent = busy ? 'Mengunggah…' : n > 1 ? 'Unggah ' + n : 'Unggah';
+    $('postInfo').textContent = n ? n + ' siap diunggah' : '';
   }
   $('drafts').addEventListener('input', function (e) { var k = Number(e.target.getAttribute('data-cap')); if (k) { find(k).caption = e.target.value; grow(e.target); bar(); } });
   $('drafts').addEventListener('click', function (e) {
@@ -95,7 +95,7 @@
     render();
   });
 
-  /* ---------- Posting ---------- */
+  /* ---------- Unggah ---------- */
   window.addEventListener('beforeunload', function (e) { if (busy || waiting().length) { e.preventDefault(); e.returnValue = ''; } });
   $('goBtn').addEventListener('click', function () {
     var todo = waiting(); if (!todo.length || busy) return;
@@ -105,7 +105,7 @@
       if (i >= todo.length || !token) {
         busy = false;
         var ok = todo.filter(function (d) { return d.state === 'ok'; }).length;
-        toast(ok === todo.length ? ok + ' postingan tayang.' : ok + ' tayang, ' + (todo.length - ok) + ' gagal – coba lagi.');
+        toast(ok === todo.length ? ok + ' unggahan tayang.' : ok + ' tayang, ' + (todo.length - ok) + ' gagal. Silakan coba lagi.');
         render(); loadRecent();
         setTimeout(function () { drafts = drafts.filter(function (d) { if (d.state === 'ok' && d.thumb) URL.revokeObjectURL(d.thumb); return d.state !== 'ok'; }); render(); }, 2000);
         return;
@@ -129,16 +129,16 @@
       var aktif = d.items.filter(function (x) { return x.status === 'Aktif' && x.id; });
       $('recent').innerHTML = aktif.length ? aktif.map(function (x) {
         return '<div class="row">' + (x.foto ? '<img class="th" src="' + esc(x.foto) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '<span class="th"></span>') +
-          '<a class="tx" href="./?id=' + encodeURIComponent(x.id) + '" style="text-decoration:none;color:inherit"><b>' + esc(x.judul || '(tanpa caption)') + '</b>' +
+          '<a class="tx" href="./?id=' + encodeURIComponent(x.id) + '" style="text-decoration:none;color:inherit"><b>' + esc(x.judul || '(tanpa keterangan)') + '</b>' +
           '<small>' + esc([x.kabupaten, x.id].filter(Boolean).join(' · ')) + '</small></a>' +
           '<button type="button" class="ghost" data-arc="' + esc(x.id) + '">Turunkan</button></div>';
-      }).join('') : '<p class="muted">Belum ada postingan yang tayang.</p>';
+      }).join('') : '<p class="muted">Belum ada unggahan yang tayang.</p>';
     }).catch(function (er) { $('recent').innerHTML = '<p class="err">' + esc(er.message) + '</p>'; });
   }
   $('recent').addEventListener('click', function (e) {
     var b = e.target.closest('[data-arc]'); if (!b) return;
     var id = b.getAttribute('data-arc');
-    if (!confirm('Turunkan ' + id + ' dari web?')) return;
+    if (!confirm('Turunkan ' + id + ' dari situs?')) return;
     b.disabled = true; b.textContent = '…';
     call({ api: 'archive', token: token, id: id })
       .then(function (d) { if (!d.ok) throw new Error(d.error); toast(id + ' diturunkan.'); loadRecent(); })

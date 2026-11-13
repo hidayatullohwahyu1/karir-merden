@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "KARIR MERDEN – Info Loker Desa Merden",
+  "name": "Karir Merden – Informasi Lowongan Kerja Desa Merden",
   "short_name": "Karir Merden",
-  "description": "Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.",
+  "description": "Informasi lowongan kerja bagi pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.",
   "lang": "id",
   "start_url": "./?utm_source=pwa",
   "scope": "./",
@@ -17,7 +17,7 @@
     { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Tips aman melamar", "url": "./?v=tips", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Admin: unggah flyer", "url": "./admin.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Kiat aman melamar", "url": "./?v=tips", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Admin: unggah foto lowongan", "url": "./admin.html", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

@@ -29,7 +29,7 @@
     if (!isNaN(t)) {
       var m = Math.floor((Date.now() - t) / 6e4);
       if (m < 1) return 'Baru saja';
-      if (m < 60) return m + ' mnt';
+      if (m < 60) return m + ' menit';
       if (m < 1440) return Math.floor(m / 60) + ' jam';
     }
     if (!j.dicek) return '';
@@ -55,7 +55,7 @@
   }
   /** Kontak lamaran → { href, label } atau null. */
   function lamar(j) {
-    var v = String(j.caraLamar || '').trim(), msg = 'Halo, saya ingin bertanya tentang lowongan ' + j.judul + ' (info dari Karir Merden).';
+    var v = String(j.caraLamar || '').trim(), msg = 'Halo, saya ingin bertanya tentang lowongan ' + j.judul + ' (informasi dari Karir Merden).';
     var wa = (v.match(/wa\.me\/(\d{9,15})/) || [])[1];
     if (!wa) { var d = v.replace(/[^\d+]/g, ''); if (!/[a-z@\/]/i.test(v) && /^(\+?62|0)8\d{7,12}$/.test(d)) wa = d.replace(/^\+/, '').replace(/^0/, '62'); }
     if (wa) return { href: 'https://wa.me/' + wa + '?text=' + encodeURIComponent(msg), label: 'Hubungi' };
@@ -89,7 +89,7 @@
       if (j.pendidikan && j.pendidikan !== 'Tidak disyaratkan') bits.push('Min. ' + esc(j.pendidikan));
       if (j.tanpaPengalaman) bits.push('Tanpa pengalaman');
       if (j.gaji) bits.push(esc(j.gaji));
-      if (j.batas) bits.push(days(j.batas) <= 5 ? '<span class="hot">Tutup ' + tgl(j.batas) + '</span>' : 'Tutup ' + tgl(j.batas));
+      if (j.batas) bits.push(days(j.batas) <= 5 ? '<span class="hot">Ditutup ' + tgl(j.batas) + '</span>' : 'Ditutup ' + tgl(j.batas));
       var poin = String(j.ringkasan || '').split(/\s*(?:\n|•)\s*/).map(function (x) { return x.replace(/^[-–*]\s*/, ''); }).filter(Boolean);
       text = '<strong>' + esc(j.judul) + '</strong>' + (bits.length ? '<span class="meta">' + bits.join(' · ') + '</span>' : '') +
         (poin.length ? '<span class="poin">' + poin.map(function (p) { return '• ' + linkify(p); }).join('\n') + '</span>' : '');
@@ -97,12 +97,12 @@
     var long = String(j.ringkasan || '').length > 240 || String(j.ringkasan || '').split(/\n|•/).length > 6;
     var l = lamar(j);
     var main = l ? '<a class="act main" href="' + esc(l.href) + '" target="_blank" rel="noopener" data-lamar="' + esc(j.id) + '">' + IC.send + esc(l.label) + '</a>'
-      : j.foto ? '<button type="button" class="act main" data-zoom="' + esc(j.id) + '">' + IC.zoom + 'Lihat flyer</button>' : '';
+      : j.foto ? '<button type="button" class="act main" data-zoom="' + esc(j.id) + '">' + IC.zoom + 'Lihat foto</button>' : '';
     return '<article class="post" id="p-' + esc(j.id) + '">' +
-      '<div class="ph">' + head + (INFO.waAdmin ? '<button type="button" class="dots" data-report="' + esc(j.id) + '" aria-label="Laporkan postingan ini" title="Laporkan">···</button>' : '') + '</div>' +
+      '<div class="ph">' + head + (INFO.waAdmin ? '<button type="button" class="dots" data-report="' + esc(j.id) + '" aria-label="Laporkan unggahan ini" title="Laporkan">···</button>' : '') + '</div>' +
       (text ? '<div class="txt' + (long ? ' clamp' : '') + '">' + text + '</div>' + (long ? '<button type="button" class="more" data-more="' + esc(j.id) + '">Lihat selengkapnya</button>' : '') : '') +
-      (j.foto ? '<button type="button" class="media" data-zoom="' + esc(j.id) + '" aria-label="Perbesar flyer"><img src="' + esc(j.foto) + '" data-fid="' + esc(j.fotoId || '') +
-        '" alt="Flyer: ' + esc(j.judul) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></button>' : '') +
+      (j.foto ? '<button type="button" class="media" data-zoom="' + esc(j.id) + '" aria-label="Perbesar foto lowongan"><img src="' + esc(j.foto) + '" data-fid="' + esc(j.fotoId || '') +
+        '" alt="Foto lowongan: ' + esc(j.judul) + '" loading="lazy" decoding="async" referrerpolicy="no-referrer"></button>' : '') +
       '<div class="acts">' + main + '<button type="button" class="act" data-share="' + esc(j.id) + '">' + IC.share + 'Bagikan</button></div>' +
       '</article>';
   }
@@ -136,19 +136,19 @@
     var fj = S.focusId && S.jobs.filter(function (j) { return j.id === S.focusId; })[0];
     if (S.focusId && S.loaded) {
       f.innerHTML = fj && !expired(fj)
-        ? '<div class="focus-h"><span>Postingan yang dibagikan</span><button type="button" class="link" data-all>Lihat semua</button></div>' + card(fj)
+        ? '<div class="focus-h"><span>Lowongan yang dibagikan</span><button type="button" class="link" data-all>Lihat semua</button></div>' + card(fj)
         : '<div class="empty"><b>Lowongan ini sudah ditutup</b>Lihat lowongan lain di bawah.</div>';
     } else f.innerHTML = '';
 
     var box = $('list');
     if (!S.loaded) {
-      box.innerHTML = S.error ? '<div class="empty"><b>Gagal memuat lowongan</b>Periksa sinyal internet.<br><button type="button" class="btn" id="retry">Coba lagi</button></div>' : skeleton() + skeleton();
+      box.innerHTML = S.error ? '<div class="empty"><b>Gagal memuat lowongan</b>Periksa koneksi internet Anda.<br><button type="button" class="btn" id="retry">Coba lagi</button></div>' : skeleton() + skeleton();
       return;
     }
     var items = filtered().filter(function (j) { return !fj || j.id !== fj.id; });
     if (!items.length) {
       box.innerHTML = '<div class="empty"><b>Belum ada lowongan' + (S.kab ? ' di ' + esc(S.kab) : '') + (S.q ? ' untuk "' + esc(S.q) + '"' : '') + '</b>' +
-        (S.kab || S.q ? 'Coba pilih "Semua" atau kata lain.' : 'Cek lagi beberapa hari ke depan.') + '</div>';
+        (S.kab || S.q ? 'Coba pilih “Semua” atau gunakan kata kunci lain.' : 'Silakan periksa kembali dalam beberapa hari.') + '</div>';
       return;
     }
     box.innerHTML = (fj ? '<div class="focus-h"><span>Lowongan lainnya</span></div>' : '') + items.slice(0, S.shown).map(card).join('');
@@ -193,12 +193,12 @@
 
   function share(j) {
     var url = location.origin + location.pathname + '?id=' + encodeURIComponent(j.id);
-    var text = 'Info loker: ' + j.judul + (j.kabupaten ? ' (' + j.kabupaten + ')' : '') + ' – dari Karir Merden, Pemdes Merden.';
+    var text = 'Lowongan kerja: ' + j.judul + (j.kabupaten ? ' (' + j.kabupaten + ')' : '') + ' — informasi dari Karir Merden, Pemerintah Desa Merden.';
     if (navigator.share) navigator.share({ title: j.judul, text: text, url: url }).catch(function () {});
     else window.open('https://wa.me/?text=' + encodeURIComponent(text + '\n' + url), '_blank', 'noopener');
   }
   function report(j) {
-    window.open('https://wa.me/' + INFO.waAdmin + '?text=' + encodeURIComponent('Laporan postingan ' + j.id + ' (' + j.judul + '): '), '_blank', 'noopener');
+    window.open('https://wa.me/' + INFO.waAdmin + '?text=' + encodeURIComponent('Laporan unggahan ' + j.id + ' (' + j.judul + '): '), '_blank', 'noopener');
   }
 
   /* ---------- Foto diperbesar + cadangan alamat foto ---------- */
@@ -206,7 +206,7 @@
   function openZoom(j) {
     lastFocus = document.activeElement;
     var img = document.querySelector('#p-' + j.id + ' .media img');
-    $('lbImg').src = (img && img.currentSrc) || j.foto; $('lbImg').alt = 'Flyer: ' + j.judul;
+    $('lbImg').src = (img && img.currentSrc) || j.foto; $('lbImg').alt = 'Foto lowongan: ' + j.judul;
     $('lightbox').classList.remove('hidden'); document.body.style.overflow = 'hidden'; $('lbClose').focus();
     catat(j.id, 'Lihat');
   }
@@ -244,7 +244,7 @@
         apply(d); S.loaded = true; render();
         try { localStorage.setItem(CACHE_KEY, JSON.stringify({ info: d.info, jobs: d.jobs })); } catch (e) { /* abaikan */ }
       })
-      .catch(function () { S.error = true; if (S.jobs.length) S.loaded = true; render(); if (S.loaded) toast('Sinyal lemah: menampilkan data terakhir.'); });
+      .catch(function () { S.error = true; if (S.jobs.length) S.loaded = true; render(); if (S.loaded) toast('Sinyal lemah. Menampilkan data terakhir.'); });
   }
 
   S.focusId = (new URLSearchParams(location.search).get('id') || '').slice(0, 20);
