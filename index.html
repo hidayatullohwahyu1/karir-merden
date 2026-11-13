@@ -3,142 +3,85 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>KARIR MERDEN – Info Loker Pemuda Desa Merden</title>
+  <title>Karir Merden – Info Loker Desa Merden</title>
   <meta name="description" content="Info lowongan kerja untuk pemuda Desa Merden dan sekitarnya. Gratis, dari Pemerintah Desa Merden.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#242526" media="(prefers-color-scheme: dark)">
-  <meta property="og:title" content="KARIR MERDEN – Info Loker Pemuda Desa Merden">
-  <meta property="og:description" content="Lowongan kerja Banjarnegara, Purbalingga, Banyumas, Kebumen, dan sekitarnya. Dicek admin desa, gratis.">
+  <meta property="og:title" content="Karir Merden – Info Loker Desa Merden">
+  <meta property="og:description" content="Lowongan kerja Banjarnegara dan sekitarnya. Dicek admin desa, gratis.">
   <meta property="og:image" content="icons/icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Karir Merden">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="style.css?v=20261113d">
+  <link rel="stylesheet" href="style.css?v=20261113e">
 </head>
 <body>
   <header class="topbar">
-    <div class="topbar-in">
-      <button type="button" class="icon-btn back hidden" id="backBtn" aria-label="Kembali">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <a class="brand" href="./" id="brandLink">
-        <img class="logo" src="icons/icon-192.png" alt="" width="40" height="40">
-        <span class="brand-text"><b id="nama">KARIR MERDEN</b><small>Info loker Pemdes Merden</small></span>
+    <div class="bar-in">
+      <a class="brand" href="./" id="home">
+        <img class="logo" src="icons/icon-192.png" alt="" width="36" height="36">
+        <b>karir merden</b>
       </a>
-      <div class="top-actions">
-        <button type="button" class="pill-btn hidden" data-install>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Pasang
-        </button>
-        <button type="button" class="icon-btn desk" id="searchBtn" aria-label="Cari dan saring lowongan" aria-expanded="false" aria-controls="filterPanel">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        </button>
-        <button type="button" class="icon-btn desk" id="tipsBtn" aria-label="Tips aman melamar">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="filter-panel hidden" id="filterPanel">
-      <div class="search-box">
+      <button type="button" class="pill hidden" data-install>Pasang</button>
+      <button type="button" class="round" id="searchBtn" aria-label="Cari lowongan" aria-expanded="false" aria-controls="searchRow">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input type="search" id="q" placeholder="Cari jabatan atau perusahaan" aria-label="Cari jabatan atau perusahaan" autocomplete="off">
-      </div>
-      <div class="frow">
-        <select id="fEdu" aria-label="Lulusan saya"><option value="">Semua lulusan</option></select>
-        <label class="switch"><input type="checkbox" id="fTanpa"><span>Tanpa pengalaman</span></label>
-      </div>
+      </button>
+    </div>
+    <div class="bar-in hidden" id="searchRow">
+      <input type="search" id="q" placeholder="Cari posisi, perusahaan, atau kata lain" aria-label="Cari lowongan" autocomplete="off">
     </div>
     <nav class="chips" id="chips" aria-label="Pilih daerah"></nav>
   </header>
 
-  <main class="feed" id="main">
-    <!-- DAFTAR -->
-    <section id="vList">
-      <div class="stories hidden" id="stories" aria-label="Lowongan terbaru"></div>
-
-      <div class="install-card hidden" data-install-wrap>
-        <img src="icons/icon-192.png" alt="" width="48" height="48">
-        <div><b>Pasang Karir Merden di HP</b><span>Buka loker lebih cepat dari layar utama, tanpa unduh dari Play Store.</span></div>
-        <button type="button" class="btn-sm" data-install>Pasang</button>
-        <button type="button" class="notice-x" data-install-x aria-label="Tutup">×</button>
-      </div>
-
-      <div class="notice" id="notice">
-        <span class="notice-ic" aria-hidden="true">!</span>
-        <p><b>Lowongan resmi tidak pernah memungut biaya.</b> Semua loker di sini dicek admin Desa Merden. Ragu? Tekan "Laporkan".</p>
-        <button type="button" class="notice-x" id="noticeX" aria-label="Tutup pengumuman">×</button>
-      </div>
-      <h1 class="count" id="count" aria-live="polite"></h1>
-      <div id="list"></div>
-      <div id="sentinel" aria-hidden="true"></div>
-    </section>
-
-    <!-- DETAIL -->
-    <section id="vDetail" class="hidden">
-      <div id="detail"></div>
-    </section>
-
-    <!-- TIPS -->
-    <section id="vTips" class="hidden">
-      <article class="post tips">
-        <h2>Tips aman melamar kerja</h2>
-        <p>Lowongan asli <b>tidak pernah</b> meminta uang dari pelamar. Waspadai 5 ciri lowongan palsu ini:</p>
-        <ol>
-          <li>Meminta biaya pendaftaran, pelatihan, seragam, medical check-up, atau tiket perjalanan.</li>
-          <li>Gaji sangat besar untuk syarat yang sangat mudah.</li>
-          <li>Hanya ada nomor WA, tanpa nama perusahaan dan alamat yang jelas.</li>
-          <li>Langsung "diterima" tanpa wawancara, lalu didesak cepat transfer.</li>
-          <li>Diminta mengirim foto KTP, KK, atau data rekening sebelum ada wawancara resmi.</li>
-        </ol>
-        <p>Untuk kerja ke luar negeri, pastikan melalui perusahaan penempatan resmi (P3MI) dan cek ke Dinas Tenaga Kerja.</p>
-        <p><b>Ragu dengan sebuah lowongan?</b> Tekan tombol "Laporkan" di lowongan itu, atau tanyakan ke kantor desa.</p>
-        <div class="infobox"><b>Dinas Tenaga Kerja Kabupaten Banjarnegara</b><br>
-          Jl. Letjend Suprapto No. 234A Semampir, Banjarnegara<br>
-          Telp. (0286) 591012<br>
-          Layanan Kartu Kuning (AK-1) tersedia lewat SIAPKerja.</div>
-      </article>
-    </section>
-
-    <footer>Pemerintah Desa Merden · Kec. Purwanegara · Kab. Banjarnegara<br><a href="admin.html">Masuk admin</a></footer>
+  <main class="feed">
+    <p class="safe">Lowongan resmi <b>tidak pernah memungut biaya</b>. <button type="button" class="link" data-tips>Tips aman melamar</button></p>
+    <div id="focus"></div>
+    <div id="list"></div>
+    <div id="more" aria-hidden="true"></div>
+    <footer>
+      Pemerintah Desa Merden · Kec. Purwanegara · Kab. Banjarnegara<br>
+      <button type="button" class="link" data-tips>Tips aman melamar</button> · <a href="admin.html">Masuk admin</a>
+    </footer>
   </main>
 
-  <!-- NAVIGASI BAWAH (HP) -->
-  <nav class="bottom-nav" aria-label="Menu utama">
-    <button type="button" data-nav="list" class="on" aria-label="Beranda">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Beranda</span></button>
-    <button type="button" data-nav="search" aria-label="Cari">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Cari</span></button>
-    <button type="button" data-nav="saved" aria-label="Tersimpan">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span>Tersimpan</span><i class="badge hidden" id="savedBadge"></i></button>
-    <button type="button" data-nav="tips" aria-label="Tips aman">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg><span>Tips</span></button>
-  </nav>
-
-  <!-- FOTO DIPERBESAR -->
   <div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto flyer">
     <button type="button" class="lb-x" id="lbClose" aria-label="Tutup foto">×</button>
     <img id="lbImg" alt="">
   </div>
 
-  <!-- PETUNJUK PASANG DI IPHONE -->
+  <div class="sheet hidden" id="tips" role="dialog" aria-modal="true" aria-labelledby="tipsTitle">
+    <div class="sheet-in">
+      <h2 id="tipsTitle">Tips aman melamar kerja</h2>
+      <p>Lowongan asli <b>tidak pernah</b> meminta uang. Waspadai jika:</p>
+      <ol>
+        <li>Diminta biaya pendaftaran, pelatihan, seragam, medical check-up, atau tiket.</li>
+        <li>Gaji sangat besar untuk syarat yang sangat mudah.</li>
+        <li>Hanya ada nomor WA, tanpa nama perusahaan dan alamat jelas.</li>
+        <li>Langsung "diterima" tanpa wawancara, lalu didesak transfer.</li>
+        <li>Diminta foto KTP, KK, atau data rekening sebelum wawancara resmi.</li>
+      </ol>
+      <p class="muted">Ragu? Laporkan lewat tombol ⋯ di postingan, atau tanyakan ke kantor desa. Disnaker Banjarnegara: (0286) 591012.</p>
+      <button type="button" class="btn" data-close>Mengerti</button>
+    </div>
+  </div>
+
   <div class="sheet hidden" id="iosHint" role="dialog" aria-modal="true" aria-label="Cara memasang di iPhone">
     <div class="sheet-in">
-      <b>Pasang di iPhone / iPad</b>
+      <h2>Pasang di iPhone</h2>
       <ol>
-        <li>Tekan tombol <b>Bagikan</b> <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;vertical-align:-3px"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 12v8h14v-8"/></svg> di bawah layar Safari.</li>
-        <li>Pilih <b>Tambah ke Layar Utama</b>.</li>
-        <li>Tekan <b>Tambah</b>.</li>
+        <li>Tekan tombol <b>Bagikan</b> di bawah layar Safari.</li>
+        <li>Pilih <b>Tambah ke Layar Utama</b>, lalu <b>Tambah</b>.</li>
       </ol>
-      <button type="button" class="btn lamar" data-ios-x>Mengerti</button>
+      <button type="button" class="btn" data-close data-ios-x>Mengerti</button>
     </div>
   </div>
 
   <div class="toast hidden" id="toast" role="status"></div>
 
-  <script src="config.js?v=20261113d"></script>
-  <script src="pwa.js?v=20261113d"></script>
-  <script src="app.js?v=20261113d"></script>
+  <script src="config.js?v=20261113e"></script>
+  <script src="pwa.js?v=20261113e"></script>
+  <script src="app.js?v=20261113e"></script>
 </body>
 </html>

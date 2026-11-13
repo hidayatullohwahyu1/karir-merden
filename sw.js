@@ -3,7 +3,7 @@
    - HTML/JS/CSS: ambil dari jaringan dulu (selalu versi terbaru), cadangan dari simpanan.
    - Data lowongan & API admin TIDAK disimpan di sini (data lowongan sudah disimpan app.js di perangkat).
    Naikkan VERSION setiap kali mengubah daftar SHELL. */
-var VERSION = 'km-v3';
+var VERSION = 'km-v4';
 var SHELL = ['./', './index.html', './admin.html',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
